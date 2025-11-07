@@ -1,1 +1,50 @@
-**/*_data*/**
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+dist/
+build/
+bin/
+
+# Environment variables
+.env
+.env.local
+
+# Kafka data directories (generated data)
+kafka1_data/
+kafka2_data/
+kafka3_data/
+
+# Logs
+logs/
+
+# Temporary files
+*.tmp
+*.log
+
+# OS specific
+.DS_Store
+Thumbs.db
