@@ -1,0 +1,11 @@
+local:
+  brokers:
+    - "localhost:29093"
+    - "localhost:39093"
+    - "localhost:49093"
+  topics:
+    - "transactions"
+    - "customers"
+    - "accounts"
+    - "transactions.credits"
+    - "transactions.debits"

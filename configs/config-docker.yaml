@@ -1,0 +1,11 @@
+docker:
+  brokers:
+    - "kafka1:19093"
+    - "kafka2:19093"
+    - "kafka3:19093"
+  topics:
+    - "transactions"
+    - "customers"
+    - "accounts"
+    - "transactions.credits"
+    - "transactions.debits"
