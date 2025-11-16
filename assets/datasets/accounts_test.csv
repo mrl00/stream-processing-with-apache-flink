@@ -1,0 +1,10 @@
+account_id,district_id,frequency,parseddate,year,month,day,date
+A00000576,55,Monthly Issuance,2013-01-01,2013,1,1,2013-01-01
+A00003818,74,Monthly Issuance,2013-01-01,2013,1,1,2013-01-01
+A00000704,55,Monthly Issuance,2013-01-01,2013,1,1,2013-01-01
+A00002378,16,Monthly Issuance,2013-01-01,2013,1,1,2013-01-01
+A00002632,24,Monthly Issuance,2013-01-02,2013,1,2,2013-01-02
+A00001972,77,Monthly Issuance,2013-01-02,2013,1,2,2013-01-02
+A00001539,1,Issuance After Transaction,2013-01-03,2013,1,3,2013-01-03
+A00000793,47,Monthly Issuance,2013-01-03,2013,1,3,2013-01-03
+A00002484,74,Monthly Issuance,2013-01-03,2013,1,3,2013-01-03

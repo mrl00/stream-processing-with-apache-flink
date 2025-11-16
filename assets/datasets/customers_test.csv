@@ -1,0 +1,10 @@
+customer_id,sex,fulldate,day,month,year,age,social,first,middle,last,phone,email,address_1,address_2,city,state,zipcode,district_id,date
+C00000001,Female,1990-12-13,13,12,1990,29,926-93-2157,Emma,Avaya,Smith,367-171-6840,emma.smith@gmail.com,387 Wellington Ave.,Unit 1,Albuquerque,NM,47246,18,1990-12-13
+C00000002,Male,1965-02-04,4,2,1965,54,806-94-5725,Noah,Everest,Thompson,212-423-7734,noah.thompson@gmail.com,75 W. Berkshire St.,,New York City,NY,10040,1,1965-02-04
+C00000003,Female,1960-10-09,9,10,1960,59,614-70-9100,Olivia,Brooklynne,Johnson,212-425-6932,olivia.johnson@outlook.com,36 Second St.,,New York City,NY,10162,1,1960-10-09
+C00000004,Male,1976-12-01,1,12,1976,43,580-20-3414,Liam,Irvin,White,951-567-8925,liam.white@gmail.com,7607 Sunnyslope Street,,Indianapolis,IN,49047,5,1976-12-01
+C00000005,Female,1980-07-03,3,7,1980,39,536-14-5809,Sophia,Danae,Williams,428-265-1568,sophia.williams@gmail.com,755 Galvin Street,,Indianapolis,IN,40852,5,1980-07-03
+C00000006,Male,1939-09-22,22,9,1939,80,430-17-5825,Mason,Javen,Lopez,813-629-5038,mason.lopez7@gmail.com,8266 Arnold Drive,Unit 6,Portland,OR,44987,12,1939-09-22
+C00000007,Male,1949-01-25,25,1,1949,71,305-80-4254,Jacob,Khai,Lee,836-845-8120,jacob.lee7@gmail.com,827 N. Green Lake Court,,Louisville,KY,44359,15,1949-01-25
+C00000008,Female,1958-02-21,21,2,1958,61,425-96-6358,Ava,Eliora,Brown,413-444-9280,ava.brown8@gmail.com,817 Joy Ridge Dr.,,Springfield,MA,1101,51,1958-02-21
+C00000009,Male,1955-10-16,16,10,1955,64,832-31-7252,William,Marek,Gonzalez,781-995-6192,william.marek.gonzalez@gmail.com,68 Carriage Road,,Lynn,MA,1901,60,1955-10-16
