@@ -32,7 +32,22 @@ func TestTransactionsLoadDataFile(t *testing.T) {
 
 		t.Logf("stream size: %d", stream.Count())
 		if stream.Count() < 9 && stream.ToSlice()[8].CustomerID != "C00002058" {
-			t.Error("customer load data failed")
+			t.Error("transaction load data failed")
+		}
+	})
+}
+
+func TestAccountLoadDataFile(t *testing.T) {
+	t.Run("testing load data file", func(t *testing.T) {
+		filename := "accounts_test.csv"
+		stream, err := utils.LoadDataFile(filename, models.AccountMapper)
+		if err != nil {
+			t.Errorf("cannot load file %v", err)
+		}
+
+		t.Logf("stream size: %d", stream.Count())
+		if stream.Count() < 9 && stream.ToSlice()[8].AccountID != "A00002484" {
+			t.Error("account load data failed")
 		}
 	})
 }
