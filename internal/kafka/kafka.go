@@ -77,6 +77,32 @@ func Produce[E any](ctx context.Context, producer *kafka.Producer, e E) error {
 	return nil
 }
 
+func Consume[M any](ctx context.Context, consumer *kafka.Consumer) error {
+	slog.InfoContext(ctx, "Consuming from "+consumer.String())
+
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+			msg, err := consumer.ReadMessage(2 * time.Second)
+			if err != nil {
+				if err.(kafka.Error).Code() == kafka.ErrTimedOut {
+					continue
+				}
+				return fmt.Errorf("error reading message: %v", err)
+			}
+
+			var m M
+			if err := json.Unmarshal(msg.Value, &m); err != nil {
+				return fmt.Errorf("error unmarshaling message: %v", err)
+			}
+
+			slog.InfoContext(ctx, "Consumed", "object", m)
+		}
+	}
+}
+
 func CheckTopic(ctx context.Context, admin kafka.AdminClient, topic string) (bool, error) {
 	defer admin.Close()
 
