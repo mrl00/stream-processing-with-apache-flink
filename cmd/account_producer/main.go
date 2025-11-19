@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"log"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/config"
@@ -21,7 +23,7 @@ func main() {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	cfg, err := config.NewAppConfig(config.Docker)
+	cfg, err := config.NewAppConfig(ctx, config.Local)
 	if err != nil {
 		log.Fatalf("config error: %v", err)
 	}
@@ -36,7 +38,11 @@ func main() {
 	}
 	defer producer.Close()
 
-	accounts, err := utils.LoadDataFile(accountDataFile, models.AccountMapper)
+	root, _ := os.Getwd()
+	fpath := filepath.Base(root)
+	fpath = filepath.Join(fpath, "/", accountDataFile)
+
+	accounts, err := utils.LoadDataFile(fpath, models.AccountMapper)
 	if err != nil {
 		log.Fatalf("main :: load file :: %v", err)
 	}
