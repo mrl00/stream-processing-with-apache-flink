@@ -8,10 +8,10 @@ import (
 type TransactionConsumer *kafka.Consumer
 type TransactionProducer *kafka.Producer
 
-func NewTransactionsConsumer(cfg config.AppConfig) (TransactionConsumer, error) {
+func NewTransactionsConsumer(cfg *config.AppConfig) (TransactionConsumer, error) {
 	return NewConsumer(cfg, "transactions", "transactions")
 }
 
-func NewTransactionProducer(cfg config.AppConfig) (TransactionProducer, error) {
+func NewTransactionProducer(cfg *config.AppConfig) (TransactionProducer, error) {
 	return NewProducer(cfg)
 }
