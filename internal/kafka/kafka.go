@@ -12,7 +12,7 @@ import (
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/config"
 )
 
-func NewProducer(cfg config.AppConfig) (*kafka.Producer, error) {
+func NewProducer(cfg *config.AppConfig) (*kafka.Producer, error) {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": cfg.GetBrokers(),
 		"acks":              "all",
@@ -24,7 +24,7 @@ func NewProducer(cfg config.AppConfig) (*kafka.Producer, error) {
 	return p, nil
 }
 
-func NewConsumer(cfg config.AppConfig, groupID string, topic string) (*kafka.Consumer, error) {
+func NewConsumer(cfg *config.AppConfig, groupID string, topic string) (*kafka.Consumer, error) {
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":  cfg.GetBrokers(),
 		"group.id":           groupID,
@@ -103,7 +103,7 @@ func Consume[M any](ctx context.Context, consumer *kafka.Consumer) error {
 	}
 }
 
-func CheckTopic(ctx context.Context, admin kafka.AdminClient, topic string) (bool, error) {
+func CheckTopic(ctx context.Context, admin *kafka.AdminClient, topic string) (bool, error) {
 	defer admin.Close()
 
 	metadata, err := admin.GetMetadata(&topic, false, 5000)
@@ -114,7 +114,7 @@ func CheckTopic(ctx context.Context, admin kafka.AdminClient, topic string) (boo
 	return false, err
 }
 
-func CreateTopic(ctx context.Context, admin kafka.AdminClient, topic kafka.TopicSpecification) error {
+func CreateTopic(ctx context.Context, admin *kafka.AdminClient, topic kafka.TopicSpecification) error {
 	exists, err := CheckTopic(ctx, admin, topic.Topic)
 	if err != nil && exists == false {
 		slog.ErrorContext(ctx, "create topic error", slog.String("err1", err.Error()))
@@ -139,5 +139,31 @@ func CreateTopic(ctx context.Context, admin kafka.AdminClient, topic kafka.Topic
 	}
 
 	slog.Debug("")
+	return nil
+}
+
+func EnsureTopic(ctx context.Context, topicName string, cfg *config.AppConfig) error {
+	admin, err := kafka.NewAdminClient(&kafka.ConfigMap{
+		"bootstrap.servers": cfg.GetBrokers(),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create kafka admin client: %v", err)
+	}
+
+	topicExists, err := CheckTopic(ctx, admin, topicName)
+	if err != nil {
+		return err
+	}
+
+	if !topicExists {
+		if err = CreateTopic(ctx, admin, kafka.TopicSpecification{
+			Topic:             topicName,
+			NumPartitions:     3,
+			ReplicationFactor: 3,
+		}); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

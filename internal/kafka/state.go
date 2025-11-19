@@ -8,14 +8,14 @@ import (
 type StateConsumer *kafka.Consumer
 type StateProducer *kafka.Producer
 
-func NewStateProducer(cfg config.AppConfig) (StateProducer, error) {
+func NewStateProducer(cfg *config.AppConfig) (StateProducer, error) {
 	return NewProducer(cfg)
 }
 
-func NewAccountsConsumer(cfg config.AppConfig) (StateConsumer, error) {
+func NewAccountsConsumer(cfg *config.AppConfig) (StateConsumer, error) {
 	return NewConsumer(cfg, "accounts", "accounts")
 }
 
-func NewCustomersConsumer(cfg config.AppConfig) (StateConsumer, error) {
+func NewCustomersConsumer(cfg *config.AppConfig) (StateConsumer, error) {
 	return NewConsumer(cfg, "customers", "customers")
 }
