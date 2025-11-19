@@ -3,13 +3,14 @@
 FROM golang:1.24 AS builder
 WORKDIR /app
 
-COPY go.mod go.sum ./
+COPY ../go.mod ../go.sum ./
 RUN go mod download
 
-COPY . .
+COPY .. .
+
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/bin/account_producer ./cmd/account_producer
 
-FROM gcr.io/distroless/base-debian12
+FROM bitnamisecure/golang:latest
 WORKDIR /app/cmd/account_producer
 
 COPY --from=builder /app/configs /app/configs
