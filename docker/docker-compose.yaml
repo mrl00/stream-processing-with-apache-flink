@@ -84,7 +84,7 @@ services:
       - flink-kafka-cluster-net
 
   jobmanager:
-    build: .
+    build: ..
     container_name: jobmanager
     ports:
       - "8081:8081"
@@ -100,7 +100,7 @@ services:
       - flink-kafka-cluster-net
 
   taskmanager1:
-    build: .
+    build: ..
     container_name: taskmanager1
     depends_on:
       - jobmanager
@@ -116,7 +116,7 @@ services:
       - flink-kafka-cluster-net
 
   taskmanager2:
-    build: .
+    build: ..
     container_name: taskmanager2
     depends_on:
       - jobmanager
