@@ -47,6 +47,15 @@ make help
 3. Acesse o AKHQ (Gerenciador Kafka):
 - http://localhost:9090
 
+### Imagens Docker dos produtores
+
+Cada producer possui um Dockerfile dedicado:
+```bash
+docker build -t account-producer -f cmd/account_producer/Dockerfile .
+docker build -t customer-producer -f cmd/customer_producer/Dockerfile .
+docker build -t transaction-producer -f cmd/transaction_producer/Dockerfile .
+```
+
 ## Configuração
 
 Os arquivos de configuração do Flink SQL estão em `configs/`.
