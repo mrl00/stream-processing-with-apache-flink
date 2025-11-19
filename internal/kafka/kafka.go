@@ -104,14 +104,12 @@ func Consume[M any](ctx context.Context, consumer *kafka.Consumer) error {
 }
 
 func CheckTopic(ctx context.Context, admin *kafka.AdminClient, topic string) (bool, error) {
-	defer admin.Close()
-
 	metadata, err := admin.GetMetadata(&topic, false, 5000)
 	if err == nil && len(metadata.Topics) > 0 && len(metadata.Topics[topic].Partitions) > 0 {
 		slog.Log(ctx, slog.LevelDebug, "topic %s already exists", topic, nil)
 		return true, nil
 	}
-	return false, err
+	return false, fmt.Errorf("check topic :: %v", err)
 }
 
 func CreateTopic(ctx context.Context, admin *kafka.AdminClient, topic kafka.TopicSpecification) error {
@@ -147,7 +145,7 @@ func EnsureTopic(ctx context.Context, topicName string, cfg *config.AppConfig) e
 		"bootstrap.servers": cfg.GetBrokers(),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create kafka admin client: %v", err)
+		return fmt.Errorf("ensure topic :: failed to create kafka admin client: %v", err)
 	}
 
 	topicExists, err := CheckTopic(ctx, admin, topicName)
