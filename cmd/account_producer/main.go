@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/config"
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/kafka"
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/models"
+	"github.com/mrl00/stream-processing-with-apache-flink/internal/router"
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/utils"
 )
 
@@ -18,7 +20,17 @@ const (
 	accountDataFile = "accounts.csv"
 )
 
+func server() {
+	r := router.New()
+	if err := http.ListenAndServe(":4000", r); err != nil {
+		log.Fatal("failed to start server: ", err)
+	}
+}
+
 func main() {
+
+	go server()
+
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -28,9 +40,9 @@ func main() {
 		log.Fatalf("config error: %v", err)
 	}
 
-	if err = kafka.EnsureTopic(ctx, accountTopic, cfg); err != nil {
-		log.Fatalf("main :: ensure topic err :: %v", err)
-	}
+	//if err = kafka.EnsureTopic(ctx, accountTopic, cfg); err != nil {
+	//	log.Fatalf("main :: ensure topic err :: %v", err)
+	//}
 
 	producer, err := kafka.NewProducer(cfg)
 	if err != nil {
