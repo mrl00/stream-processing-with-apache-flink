@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	"github.com/hashicorp/go-uuid"
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/config"
 )
 
@@ -43,32 +44,40 @@ func NewConsumer(cfg *config.AppConfig, groupID string, topic string) (*kafka.Co
 	return consumer, nil
 }
 
-func Produce[E any](ctx context.Context, producer *kafka.Producer, e E) error {
-	message, err := json.Marshal(e)
+func Produce[E any](ctx context.Context, producer *kafka.Producer, event E) error {
+	message, err := json.Marshal(event)
 	if err != nil {
 		return fmt.Errorf("failed to marshal: %v", err)
+	}
+	if message == nil {
+		return fmt.Errorf("invalid message :: null message")
+	}
+	key, err := uuid.GenerateUUID()
+	if err != nil {
+		return fmt.Errorf("failed to generate uuid: %v", err)
 	}
 
 	topic := ctx.Value("topic").(string)
 	err = producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
 		Value:          message,
+		Key:            []byte(key),
 	}, nil)
 	if err != nil {
 		return fmt.Errorf("failed to produce message: %v", err)
 	}
 
 	select {
-	case ev := <-producer.Events():
-		switch e := ev.(type) {
+	case events := <-producer.Events():
+		switch ev := events.(type) {
 		case *kafka.Message:
-			if e.TopicPartition.Error != nil {
-				return fmt.Errorf("delivery failed: %v", e.TopicPartition.Error)
+			if ev.TopicPartition.Error != nil {
+				return fmt.Errorf("delivery failed: %v", ev.TopicPartition.Error)
 			}
-			fmt.Printf("Produce order: %s\n", string(message))
+			fmt.Printf("Produce message: %s\n", string(message))
 
 		case kafka.Error:
-			return fmt.Errorf("producer error: %v", e)
+			return fmt.Errorf("producer error: %v", ev)
 		}
 	case <-ctx.Done():
 		return ctx.Err()
@@ -109,7 +118,10 @@ func CheckTopic(ctx context.Context, admin *kafka.AdminClient, topic string) (bo
 		slog.Log(ctx, slog.LevelDebug, "topic %s already exists", topic, nil)
 		return true, nil
 	}
-	return false, fmt.Errorf("check topic :: %v", err)
+	if err != nil {
+		return false, fmt.Errorf("check topic :: %v", err)
+	}
+	return false, nil
 }
 
 func CreateTopic(ctx context.Context, admin *kafka.AdminClient, topic kafka.TopicSpecification) error {
@@ -140,7 +152,7 @@ func CreateTopic(ctx context.Context, admin *kafka.AdminClient, topic kafka.Topi
 	return nil
 }
 
-func EnsureTopic(ctx context.Context, topicName string, cfg *config.AppConfig) error {
+func EnsureTopic(ctx context.Context, topicName string, cleanupPolicy string, cfg *config.AppConfig) error {
 	admin, err := kafka.NewAdminClient(&kafka.ConfigMap{
 		"bootstrap.servers": cfg.GetBrokers(),
 	})
@@ -160,6 +172,19 @@ func EnsureTopic(ctx context.Context, topicName string, cfg *config.AppConfig) e
 			ReplicationFactor: 3,
 		}); err != nil {
 			return err
+		}
+
+		resource := kafka.ConfigResource{
+			Type: kafka.ResourceTopic,
+			Name: topicName,
+			Config: []kafka.ConfigEntry{
+				{Name: "cleanup.policy", Value: cleanupPolicy},
+			},
+		}
+
+		_, err := admin.AlterConfigs(ctx, []kafka.ConfigResource{resource}, nil)
+		if err != nil {
+			return fmt.Errorf("failed to alter configs: %v", err)
 		}
 	}
 
