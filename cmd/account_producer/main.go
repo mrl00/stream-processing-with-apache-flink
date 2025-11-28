@@ -34,9 +34,20 @@ func main() {
 
 	go server()
 
+	var env config.Env
+	envRun := os.Getenv("ENVRUN")
+
+	switch envRun {
+	case "local":
+		env = config.Local
+	case "docker":
+		env = config.Docker
+	default:
+		env = config.Local
+	}
 	ctx := context.Background()
 
-	cfg, err := config.NewAppConfig(ctx, config.Local)
+	cfg, err := config.NewAppConfig(ctx, env)
 	if err != nil {
 		log.Fatalf("config error: %v", err)
 	}
@@ -70,4 +81,6 @@ func main() {
 		}
 		time.Sleep(10 * time.Millisecond)
 	})
+
+	select {}
 }

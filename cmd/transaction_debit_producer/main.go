@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/config"
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/kafka"
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/models"
@@ -34,9 +35,25 @@ func main() {
 
 	go server()
 
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	var env config.Env
+	envRun := os.Getenv("ENVRUN")
+
+	switch envRun {
+	case "local":
+		env = config.Local
+	case "docker":
+		env = config.Docker
+	default:
+		env = config.Local
+	}
+
 	ctx := context.Background()
 
-	cfg, err := config.NewAppConfig(ctx, config.Local)
+	cfg, err := config.NewAppConfig(ctx, env)
 	if err != nil {
 		log.Fatalf("config error: %v", err)
 	}

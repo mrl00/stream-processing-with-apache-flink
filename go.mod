@@ -5,6 +5,7 @@ go 1.24
 require (
 	github.com/confluentinc/confluent-kafka-go/v2 v2.12.0
 	github.com/hashicorp/go-uuid v1.0.3
+	github.com/joho/godotenv v1.5.1
 	github.com/mariomac/gostream v0.10.1
 	gopkg.in/yaml.v3 v3.0.1
 )
