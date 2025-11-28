@@ -74,8 +74,6 @@ func Produce[E any](ctx context.Context, producer *kafka.Producer, event E) erro
 			if ev.TopicPartition.Error != nil {
 				return fmt.Errorf("delivery failed: %v", ev.TopicPartition.Error)
 			}
-			fmt.Printf("Produce message: %s\n", string(message))
-
 		case kafka.Error:
 			return fmt.Errorf("producer error: %v", ev)
 		}
