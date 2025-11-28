@@ -19,7 +19,7 @@ import (
 
 const (
 	accountTopic    = "customers"
-	accountDataFile = "customers_test.csv"
+	accountDataFile = "customers.csv"
 	cleanupPolicy   = "compact"
 )
 
