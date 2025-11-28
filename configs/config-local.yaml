@@ -1,8 +1,8 @@
 local:
   brokers:
-    - "localhost:29093"
-    - "localhost:39093"
-    - "localhost:49093"
+    - "localhost:29092"
+    - "localhost:39092"
+    - "localhost:49092"
   topics:
     - "transactions"
     - "customers"

@@ -2,31 +2,45 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/config"
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/kafka"
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/models"
+	"github.com/mrl00/stream-processing-with-apache-flink/internal/router"
 	"github.com/mrl00/stream-processing-with-apache-flink/internal/utils"
 )
 
 const (
 	accountTopic    = "accounts"
 	accountDataFile = "accounts.csv"
+	cleanupPolicy   = "compact"
 )
 
-func main() {
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
+func server() {
+	r := router.New()
+	if err := http.ListenAndServe(":4000", r); err != nil {
+		log.Fatal("failed to start server: ", err)
+	}
+}
 
-	cfg, err := config.NewAppConfig(config.Docker)
+func main() {
+
+	ctx := context.Background()
+
+	cfg, err := config.NewAppConfig(ctx, config.Local)
 	if err != nil {
 		log.Fatalf("config error: %v", err)
 	}
+	fmt.Printf("config: %+v\n", cfg)
 
-	if err = kafka.EnsureTopic(ctx, accountTopic, cfg); err != nil {
+	if err = kafka.EnsureTopic(ctx, accountTopic, string(cleanupPolicy), cfg); err != nil {
 		log.Fatalf("main :: ensure topic err :: %v", err)
 	}
 
@@ -36,18 +50,22 @@ func main() {
 	}
 	defer producer.Close()
 
-	accounts, err := utils.LoadDataFile(accountDataFile, models.AccountMapper)
+	root, err := os.Getwd()
+	fpath := filepath.Join(root, "/assets/datasets/", accountDataFile)
+
+	accounts, err := utils.LoadDataFile(fpath, models.AccountMapper)
 	if err != nil {
 		log.Fatalf("main :: load file :: %v", err)
 	}
 
-	accountCtx := context.WithValue(ctx, "topic", accountTopic)
-	accounts.ForEach(func(a *models.Account) {
-		if err := kafka.Produce(accountCtx, producer, a); err != nil {
+	accountCtx := context.WithValue(ctx, "topic", string(accountTopic))
+	accounts.Skip(1).ForEach(func(a *models.Account) {
+		j, _ := json.MarshalIndent(a, "", "  ")
+		fmt.Printf("Produce account: %s\n", string(j))
+
+		if err := kafka.Produce(accountCtx, producer, *a); err != nil {
 			log.Fatalf("main :: produce accounts :: %v", err)
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(10 * time.Millisecond)
 	})
-
-	select {}
 }
