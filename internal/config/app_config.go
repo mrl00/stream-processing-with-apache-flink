@@ -1,7 +1,9 @@
 package config
 
 import (
+	"context"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
@@ -23,16 +25,18 @@ type AppConfig struct {
 	Topics  []string `yaml:"topics,omitempty"`
 }
 
-func NewAppConfig(e Env) (*AppConfig, error) {
-	var filePath string
+func NewAppConfig(ctx context.Context, e Env) (*AppConfig, error) {
+	root, _ := os.Getwd()
+	p := ""
+
 	switch e {
 	case Local:
-		filePath = "../../configs/config-local.yaml"
+		p = filepath.Join(root, "/configs/config-local.yaml")
 	case Docker:
-		filePath = "../../configs/config-docker.yaml"
+		p = filepath.Join(root, "/configs/config-docker.yaml")
 	}
 
-	yamlFile, err := os.ReadFile(filePath)
+	yamlFile, err := os.ReadFile(p)
 	if err != nil {
 		return nil, err
 	}

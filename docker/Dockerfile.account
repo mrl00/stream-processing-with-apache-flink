@@ -1,0 +1,29 @@
+FROM golang:1.24 AS builder
+WORKDIR /app
+
+COPY . .
+
+RUN go mod download && go build -o /app/bin/account_producer ./cmd/account_producer
+
+FROM debian:bookworm-slim AS runner
+
+WORKDIR /app
+
+EXPOSE 4000
+
+ENV DOCKERIZE_VERSION=v0.9.6
+
+RUN apt-get update \
+  && apt-get install -y wget \
+  && wget -O - https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz | tar xzf - -C /usr/local/bin \
+  && apt-get autoremove -yqq --purge wget && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app/configs/config-docker.yaml /app/configs/config-docker.yaml
+COPY --from=builder /app/assets/datasets/accounts.csv /app/assets/datasets/accounts.csv
+COPY --from=builder /app/assets/datasets/accounts_test.csv /app/assets/datasets/accounts_test.csv
+COPY --from=builder /app/bin/account_producer /app/account_producer
+
+RUN apt-get update && apt-get install -y ca-certificates librdkafka1 && rm -rf /var/lib/apt/lists/*
+
+ENTRYPOINT ["./account_producer"]
+
