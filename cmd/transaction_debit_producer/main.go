@@ -18,9 +18,9 @@ import (
 )
 
 const (
-	accountTopic    = "customers"
-	accountDataFile = "customers_test.csv"
-	cleanupPolicy   = "compact"
+	accountTopic    = "transactions.debit"
+	accountDataFile = "transactions.csv"
+	cleanupPolicy   = "delete"
 )
 
 func server() {
@@ -31,6 +31,8 @@ func server() {
 }
 
 func main() {
+
+	go server()
 
 	ctx := context.Background()
 
@@ -53,13 +55,13 @@ func main() {
 	root, err := os.Getwd()
 	fpath := filepath.Join(root, "/assets/datasets/", accountDataFile)
 
-	accounts, err := utils.LoadDataFile(fpath, models.CustomerMapper)
+	accounts, err := utils.LoadDataFile(fpath, models.TransactionMapper)
 	if err != nil {
 		log.Fatalf("main :: load file :: %v", err)
 	}
 
 	accountCtx := context.WithValue(ctx, "topic", string(accountTopic))
-	accounts.Skip(1).ForEach(func(a *models.Customer) {
+	accounts.Skip(1).ForEach(func(a *models.Transaction) {
 		j, _ := json.MarshalIndent(a, "", "  ")
 		fmt.Printf("Produce account: %s\n", string(j))
 
