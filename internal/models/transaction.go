@@ -7,15 +7,14 @@ import (
 )
 
 type Transaction struct {
-	TransactionID      string    `json:"transactionId"`
-	AccountID          string    `json:"accountId"`
-	CustomerID         string    `json:"customerId"`
-	EventTime          time.Time `json:"eventTime"`
-	EventTimeFormatted string    `json:"eventTimeFormatted"`
-	Type               string    `json:"type"`
-	Operation          string    `json:"operation"`
-	Amount             float64   `json:"amount"`
-	Balance            float64   `json:"balance"`
+	TransactionID string    `json:"transaction_id"`
+	AccountID     string    `json:"account_id"`
+	Type          string    `json:"type"`
+	Operation     string    `json:"operation"`
+	Amount        float64   `json:"amount"`
+	Balance       float64   `json:"balance"`
+	EventTime     time.Time `json:"event_time"`
+	CustomerID    string    `json:"customer_id"`
 }
 
 func TransactionMapper(line []string) (*Transaction, error) {
