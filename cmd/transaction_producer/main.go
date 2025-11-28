@@ -32,6 +32,8 @@ func server() {
 
 func main() {
 
+	go server()
+
 	ctx := context.Background()
 
 	cfg, err := config.NewAppConfig(ctx, config.Local)
