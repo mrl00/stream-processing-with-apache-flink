@@ -13,6 +13,7 @@ type Transaction struct {
 	Operation     string    `json:"operation"`
 	Amount        float64   `json:"amount"`
 	Balance       float64   `json:"balance"`
+	KSymbol       string    `json:"k_symbol"`
 	EventTime     time.Time `json:"event_time"`
 	CustomerID    string    `json:"customer_id"`
 }
@@ -40,6 +41,7 @@ func TransactionMapper(line []string) (*Transaction, error) {
 		Operation:     line[3],
 		Amount:        amount,
 		Balance:       balance,
+		KSymbol:       line[6],
 		EventTime:     eventTime,
 		CustomerID:    line[8],
 	}, nil
